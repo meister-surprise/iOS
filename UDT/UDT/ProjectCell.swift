@@ -5,7 +5,9 @@ struct ProjectCell: View {
     var color: Color
     var body: some View {
         VStack {
-            Image("ProjectImage")
+            Image(systemName: "app.badge")
+                .resizable()
+                .frame(width: 89, height: 90)
                 .foregroundColor(color)
                 .padding(.vertical, 32)
             HStack {

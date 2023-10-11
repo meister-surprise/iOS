@@ -15,7 +15,7 @@ struct MainView: View {
                     Button {
                         
                     } label: {
-                        Image("AddImage")
+                        Image(systemName: "plus.circle.fill")
                             .resizable()
                             .frame(width: 42,height: 42)
                             .tint(Color.blue)

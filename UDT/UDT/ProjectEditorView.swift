@@ -15,7 +15,7 @@ struct ProjectEditorView: View {
             }
             .padding(40)
             .background(Color("BackGroundColor"))
-            .animation(.easeInOut)
+            .animation(.easeIn)
         }
         .navigationBarBackButtonHidden()
     }
@@ -41,7 +41,7 @@ struct ProjectEditorHeaderView: View {
                 Button {
                     presentationMode.wrappedValue.dismiss()
                 } label: {
-                    Image("BackButtonImage")
+                    Image(systemName: "chevron.left")
                         .frame(width: 17, height: 24)
                 }
                 Text(name)
@@ -75,24 +75,36 @@ struct ProjectEditorHeaderView: View {
 struct ProjectEditorTaskView: View {
     @ObservedObject var viewModel: ProjectEditorViewModel
     var body: some View {
-        VStack {
-            ForEach(0 ..< viewModel.dropView.count, id: \.self) { index in
-                let data: ComponentType = viewModel.dropView[index]
-                switch data {
-                case .button:
-                    ComponentCell(type: .button, isDrag: true)
-                case .text:
-                    ComponentCell(type: .text, isDrag: true)
-                case .image:
-                    ComponentCell(type: .image, isDrag: true)
-                case .spacer:
-                    ComponentCell(type: .spacer, isDrag: true)
+        ScrollView(.vertical) {
+            HStack {
+                VStack(spacing: 13) {
+                    ForEach(0 ..< viewModel.dropView.count, id: \.self) { index in
+                        let data: ComponentType = viewModel.dropView[index]
+                        switch data {
+                        case .button:
+                            ComponentCell(type: .button, isDrag: true) {
+                                viewModel.removeBlock(index)
+                            }
+                        case .text:
+                            ComponentCell(type: .text, isDrag: true) {
+                                viewModel.removeBlock(index)
+                            }
+                        case .image:
+                            ComponentCell(type: .image, isDrag: true)  {
+                                viewModel.removeBlock(index)
+                            }
+                        case .spacer:
+                            ComponentCell(type: .spacer, isDrag: true)  {
+                                viewModel.removeBlock(index)
+                            }
+                        }
+                    }
+                    Spacer()
                 }
+                Spacer()
             }
-            Spacer()
+            .padding(40)
         }
-        .padding(40)
-        .frame(width: 734)
         .background(Color(uiColor: .systemGray4))
         .cornerRadius(20)
         .dropDestination(for: String.self) { items ,_ in

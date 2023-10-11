@@ -23,7 +23,7 @@ enum ComponentType: Codable{
         case .spacer:
             return ("간격", Image(systemName: "space"), .green)
         case .text:
-            return ("텍스트", Image(systemName: "text.bubble.fill"), .purple)
+            return ("텍스트", Image(systemName: "text.bubble.fill"), .indigo)
         }
     }
     static func formString(_ string: String) -> ComponentType {
