@@ -19,6 +19,8 @@ struct MainView: View {
                             .resizable()
                             .frame(width: 42,height: 42)
                             .tint(Color.blue)
+                            .background(Color.white)
+                            .cornerRadius(21)
                     }
                 }
                 .padding(.horizontal, 40)

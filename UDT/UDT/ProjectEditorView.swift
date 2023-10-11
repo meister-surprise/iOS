@@ -37,12 +37,14 @@ struct ProjectEditorHeaderView: View {
     var body: some View {
         VStack {
             Spacer().frame(height: 81)
-            HStack(spacing: 11) {
+            HStack(alignment: .center, spacing: 11) {
                 Button {
                     presentationMode.wrappedValue.dismiss()
                 } label: {
                     Image(systemName: "chevron.left")
+                        .resizable()
                         .frame(width: 17, height: 24)
+                        .foregroundColor(.white)
                 }
                 Text(name)
                     .font(.system(size: 36, weight: .bold))
