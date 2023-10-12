@@ -20,6 +20,7 @@
 		670311552AD6B1FA0005630D /* ComponentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670311542AD6B1FA0005630D /* ComponentCell.swift */; };
 		670311572AD6C3B80005630D /* ProjectEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670311562AD6C3B80005630D /* ProjectEditorViewModel.swift */; };
 		670311592AD6C4060005630D /* ComponentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670311582AD6C4060005630D /* ComponentType.swift */; };
+		6703115E2AD774410005630D /* AppGPTLang in Frameworks */ = {isa = PBXBuildFile; productRef = 6703115D2AD774410005630D /* AppGPTLang */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6703115E2AD774410005630D /* AppGPTLang in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,15 +108,12 @@
 		670311232AD68F140005630D /* UDT */ = {
 			isa = PBXGroup;
 			children = (
+				670311612AD77CF00005630D /* ProjectEditor */,
+				6703115F2AD77CDD0005630D /* Main */,
 				670311242AD68F140005630D /* UDTApp.swift */,
 				670311262AD68F140005630D /* ContentView.swift */,
 				670311282AD68F160005630D /* Assets.xcassets */,
 				6703112A2AD68F160005630D /* Preview Content */,
-				6703114E2AD68F3F0005630D /* MainView.swift */,
-				670311502AD694E60005630D /* ProjectCell.swift */,
-				670311522AD69A5D0005630D /* ProjectEditorView.swift */,
-				670311542AD6B1FA0005630D /* ComponentCell.swift */,
-				670311562AD6C3B80005630D /* ProjectEditorViewModel.swift */,
 				670311582AD6C4060005630D /* ComponentType.swift */,
 			);
 			path = UDT;
@@ -145,6 +144,41 @@
 			path = UDTUITests;
 			sourceTree = "<group>";
 		};
+		6703115F2AD77CDD0005630D /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				670311602AD77CE60005630D /* Cell */,
+				6703114E2AD68F3F0005630D /* MainView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		670311602AD77CE60005630D /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				670311502AD694E60005630D /* ProjectCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		670311612AD77CF00005630D /* ProjectEditor */ = {
+			isa = PBXGroup;
+			children = (
+				670311622AD77D020005630D /* Cell */,
+				670311522AD69A5D0005630D /* ProjectEditorView.swift */,
+				670311562AD6C3B80005630D /* ProjectEditorViewModel.swift */,
+			);
+			path = ProjectEditor;
+			sourceTree = "<group>";
+		};
+		670311622AD77D020005630D /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				670311542AD6B1FA0005630D /* ComponentCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -161,6 +195,9 @@
 			dependencies = (
 			);
 			name = UDT;
+			packageProductDependencies = (
+				6703115D2AD774410005630D /* AppGPTLang */,
+			);
 			productName = UDT;
 			productReference = 670311212AD68F140005630D /* UDT.app */;
 			productType = "com.apple.product-type.application";
@@ -233,6 +270,9 @@
 				Base,
 			);
 			mainGroup = 670311182AD68F140005630D;
+			packageReferences = (
+				6703115C2AD774410005630D /* XCRemoteSwiftPackageReference "appgptlang" */,
+			);
 			productRefGroup = 670311222AD68F140005630D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -612,6 +652,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6703115C2AD774410005630D /* XCRemoteSwiftPackageReference "appgptlang" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/meister-surprise/appgptlang";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6703115D2AD774410005630D /* AppGPTLang */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6703115C2AD774410005630D /* XCRemoteSwiftPackageReference "appgptlang" */;
+			productName = AppGPTLang;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 670311192AD68F140005630D /* Project object */;
 }

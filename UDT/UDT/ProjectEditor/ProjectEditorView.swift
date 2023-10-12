@@ -1,7 +1,15 @@
 import SwiftUI
+import AppGPTLang
 
 struct ProjectEditorView: View {
     @ObservedObject var viewModel = ProjectEditorViewModel()
+    @State var code: String = """
+        Text($x, 50, red)
+        Text("Seokho", 30, label)
+        Text("Hello, world!", 15, label)
+        Spacer()
+        Button({var(x="Hello");}, "Hi", red)
+    """
     let name: String
     init(name: String) {
         self.name = name
@@ -11,7 +19,10 @@ struct ProjectEditorView: View {
             ProjectEditorHeaderView(name: name)
             HStack(spacing: 26) {
                 ProjectEditorTaskView(viewModel: viewModel)
-                ProjectEditorCanvasView()
+                AppGPTView(code: $code)
+                    .frame(width: 354)
+                    .background(Color(uiColor: .systemGray4))
+                    .cornerRadius(20)
             }
             .padding(40)
             .background(Color("BackGroundColor"))
@@ -55,12 +66,12 @@ struct ProjectEditorHeaderView: View {
             .padding(.horizontal, 40)
             ScrollView(.horizontal) {
                 HStack(spacing: 13) {
-                    ComponentCell(type: .button)
-                        .draggable(ComponentType.button.toString())
-                    ComponentCell(type: .text)
-                        .draggable(ComponentType.text.toString())
-                    ComponentCell(type: .image)
-                        .draggable(ComponentType.image.toString())
+                    ComponentCell(type: .button())
+                        .draggable(ComponentType.button().toString())
+                    ComponentCell(type: .text())
+                        .draggable(ComponentType.text().toString())
+                    ComponentCell(type: .image())
+                        .draggable(ComponentType.image().toString())
                     ComponentCell(type: .spacer)
                         .draggable(ComponentType.spacer.toString())
                     Spacer()
@@ -84,15 +95,15 @@ struct ProjectEditorTaskView: View {
                         let data: ComponentType = viewModel.dropView[index]
                         switch data {
                         case .button:
-                            ComponentCell(type: .button, isDrag: true) {
+                            ComponentCell(type: .button(), isDrag: true) {
                                 viewModel.removeBlock(index)
                             }
                         case .text:
-                            ComponentCell(type: .text, isDrag: true) {
+                            ComponentCell(type: .text(), isDrag: true) {
                                 viewModel.removeBlock(index)
                             }
                         case .image:
-                            ComponentCell(type: .image, isDrag: true)  {
+                            ComponentCell(type: .image(), isDrag: true)  {
                                 viewModel.removeBlock(index)
                             }
                         case .spacer:
@@ -113,17 +124,5 @@ struct ProjectEditorTaskView: View {
             viewModel.addBlock(items.first ?? "button")
             return true
         }
-    }
-}
-
-
-struct ProjectEditorCanvasView: View {
-    var body: some View {
-        VStack {
-            Spacer()
-        }
-        .frame(width: 354)
-        .background(Color(uiColor: .systemGray4))
-        .cornerRadius(20)
     }
 }

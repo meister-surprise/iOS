@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "appgptlang",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/meister-surprise/appgptlang",
+      "state" : {
+        "branch" : "main",
+        "revision" : "54e152b37da559a2ba782b46d660d5c5dbe7d458"
+      }
+    }
+  ],
+  "version" : 2
+}

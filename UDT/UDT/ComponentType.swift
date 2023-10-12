@@ -8,11 +8,36 @@
 import Foundation
 import SwiftUI
 
-enum ComponentType: Codable{
-    case button
-    case text
-    case image
+// 버튼 액션 종류
+enum ActionType {
+    case variable(key: String, value: String) // 변수 설정
+    case open(url: String) // 하이퍼링크
+}
+
+// 텍스트 종류
+enum TextType {
+    case variable(key: String) // 변수
+    case constant(value: String) // 고정 값
+}
+
+enum ComponentType {
+    case button(action: ActionType = .open(url: ""), text: String = "", color: Color = .blue)
+    case text(text: String = "", size: CGFloat = 20, color: Color = Color(.label))
+    case image(url: String = "")
     case spacer
+    
+    func isSpacer() -> Bool {
+        switch self {
+        case .button(action: _, text: _, color: _):
+            false
+        case .text(text: _, size: _, color: _):
+            false
+        case .image(url: _):
+            false
+        case .spacer:
+            true
+        }
+    }
 
     func bindComponent() -> (String, Image, Color) {
         switch self {
@@ -29,15 +54,15 @@ enum ComponentType: Codable{
     static func formString(_ string: String) -> ComponentType {
         switch string {
         case "button":
-            return .button
+            return .button()
         case "image":
-            return .image
+            return .image()
         case "spacer":
             return .spacer
         case "text":
-            return .text
+            return .text()
         default:
-            return .button
+            return .button()
         }
     }
     

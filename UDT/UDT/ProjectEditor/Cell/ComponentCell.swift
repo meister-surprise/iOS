@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ComponentCell: View {
+    let defaultColor: Color
     @State private var color: Color
     @State private var image: Image
     @State private var text: String = ""
@@ -20,6 +21,7 @@ struct ComponentCell: View {
         self.image = type.bindComponent().1
         self.title = type.bindComponent().0
         self.deleteAction = deleteAction
+        self.defaultColor = type.bindComponent().2
     }
     var body: some View {
         HStack(spacing: 0) {
@@ -27,7 +29,7 @@ struct ComponentCell: View {
                 image
                     .resizable()
                     .frame(width: 26, height: 26)
-                    .foregroundColor(color)
+                    .foregroundColor(defaultColor)
                     .padding(8)
                     .background(.white)
                     .cornerRadius(21)
@@ -38,18 +40,18 @@ struct ComponentCell: View {
                 Spacer()
             }
             .padding(4)
-            .background(color)
+            .background(defaultColor)
             .clipShape(Capsule())
             .frame(width: 236)
             
             if isDrag! {
-                if type != .spacer  {
+                if !type.isSpacer() {
                     Button {
                         self.isPop.toggle()
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .frame(width: 20.28, height: 19.93)
-                            .foregroundColor(color)
+                            .foregroundColor(defaultColor)
                             .padding(.leading, 13)
                     }.popover(isPresented: $isPop, arrowEdge: .bottom) {
                         switch type {
@@ -68,7 +70,7 @@ struct ComponentCell: View {
                 Button(action: deleteAction!) {
                     Image(systemName: "trash")
                         .frame(width: 19.27, height: 23.49)
-                        .foregroundColor(color)
+                        .foregroundColor(defaultColor)
                         .padding(.trailing, 13)
                 }
             }
@@ -79,7 +81,7 @@ struct ComponentCell: View {
 }
 
 #Preview {
-    ComponentCell(type: .button)
+    ComponentCell(type: .button())
 }
 
 struct ButtonPopView: View {
