@@ -3,13 +3,7 @@ import AppGPTLang
 
 struct ProjectEditorView: View {
     @ObservedObject var viewModel = ProjectEditorViewModel()
-    @State var code: String = """
-        Text($x, 50, red)
-        Text("Seokho", 30, label)
-        Text("Hello, world!", 15, label)
-        Spacer()
-        Button({var(x="Hello");}, "Hi", red)
-    """
+    
     let name: String
     init(name: String) {
         self.name = name
@@ -19,10 +13,14 @@ struct ProjectEditorView: View {
             ProjectEditorHeaderView(name: name)
             HStack(spacing: 26) {
                 ProjectEditorTaskView(viewModel: viewModel)
-                AppGPTView(code: $code)
-                    .frame(width: 354)
-                    .background(Color(uiColor: .systemGray4))
-                    .cornerRadius(20)
+                AppGPTView(code: Binding(get: {
+                    let codes = viewModel.dropView.map { $0.toCode() }
+                    return codes.joined(separator: "\n")
+                }, set: { _ in }))
+                .frame(width: 354)
+                .frame(maxHeight: .infinity)
+                .background(Color(uiColor: .systemGray4))
+                .cornerRadius(20)
             }
             .padding(40)
             .background(Color("BackGroundColor"))
@@ -66,13 +64,13 @@ struct ProjectEditorHeaderView: View {
             .padding(.horizontal, 40)
             ScrollView(.horizontal) {
                 HStack(spacing: 13) {
-                    ComponentCell(type: .button())
+                    ComponentCell(type: .constant(.button()))
                         .draggable(ComponentType.button().toString())
-                    ComponentCell(type: .text())
+                    ComponentCell(type: .constant(.text()))
                         .draggable(ComponentType.text().toString())
-                    ComponentCell(type: .image())
+                    ComponentCell(type: .constant(.image()))
                         .draggable(ComponentType.image().toString())
-                    ComponentCell(type: .spacer)
+                    ComponentCell(type: .constant(.spacer))
                         .draggable(ComponentType.spacer.toString())
                     Spacer()
                 }
@@ -95,19 +93,19 @@ struct ProjectEditorTaskView: View {
                         let data: ComponentType = viewModel.dropView[index]
                         switch data {
                         case .button:
-                            ComponentCell(type: .button(), isDrag: true) {
+                            ComponentCell(type: $viewModel.dropView[index], isDrag: true) {
                                 viewModel.removeBlock(index)
                             }
                         case .text:
-                            ComponentCell(type: .text(), isDrag: true) {
+                            ComponentCell(type: $viewModel.dropView[index], isDrag: true) {
                                 viewModel.removeBlock(index)
                             }
                         case .image:
-                            ComponentCell(type: .image(), isDrag: true)  {
+                            ComponentCell(type: $viewModel.dropView[index], isDrag: true)  {
                                 viewModel.removeBlock(index)
                             }
                         case .spacer:
-                            ComponentCell(type: .spacer, isDrag: true)  {
+                            ComponentCell(type: $viewModel.dropView[index], isDrag: true)  {
                                 viewModel.removeBlock(index)
                             }
                         }

@@ -1,27 +1,58 @@
 import SwiftUI
 
+//func bindComponent() -> (String, Image, Color) {
+//    switch self {
+//    case .button:
+//        return ("동작버튼", Image(systemName: "button.horizontal.top.press.fill"), .blue)
+//    case .image:
+//        return ("이미지", Image(systemName: "photo"), .pink)
+//    case .spacer:
+//        return ("간격", Image(systemName: "space"), .green)
+//    case .text:
+//        return ("텍스트", Image(systemName: "text.bubble.fill"), .indigo)
+//    }
+//}
+
 struct ComponentCell: View {
-    let defaultColor: Color
-    @State private var color: Color
-    @State private var image: Image
-    @State private var text: String = ""
     @State private var isDrag: Bool?
     @State private var isPop: Bool = false
     let title: String
-    let type: ComponentType
+    let color: Color
+    let image: Image
+    @Binding var type: ComponentType
     let deleteAction: (() -> ())?
     init(
-        type: ComponentType,
+        type: Binding<ComponentType>,
         isDrag: Bool? = false,
         deleteAction: (() -> ())? = nil
     ) {
-        self.type = type
+        self._type = type
         self.isDrag = isDrag
-        self.color = type.bindComponent().2
-        self.image = type.bindComponent().1
-        self.title = type.bindComponent().0
+        self.title = { () -> String in
+            switch type.wrappedValue {
+            case .button: "동작 버튼"
+            case .text: "텍스트"
+            case .image: "이미지"
+            case .spacer: "간격"
+            }
+        }()
+        self.color = { () -> Color in
+            switch type.wrappedValue {
+            case .button: .blue
+            case .text: .indigo
+            case .image: .pink
+            case .spacer: .green
+            }
+        }()
+        self.image = Image(systemName: { () -> String in
+            switch type.wrappedValue {
+            case .button: "button.horizontal.top.press.fill"
+            case .text: "text.bubble.fill"
+            case .image: "photo"
+            case .spacer: "space"
+            }
+        }())
         self.deleteAction = deleteAction
-        self.defaultColor = type.bindComponent().2
     }
     var body: some View {
         HStack(spacing: 0) {
@@ -29,7 +60,7 @@ struct ComponentCell: View {
                 image
                     .resizable()
                     .frame(width: 26, height: 26)
-                    .foregroundColor(defaultColor)
+                    .foregroundColor(color)
                     .padding(8)
                     .background(.white)
                     .cornerRadius(21)
@@ -40,7 +71,7 @@ struct ComponentCell: View {
                 Spacer()
             }
             .padding(4)
-            .background(defaultColor)
+            .background(color)
             .clipShape(Capsule())
             .frame(width: 236)
             
@@ -51,17 +82,30 @@ struct ComponentCell: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .frame(width: 20.28, height: 19.93)
-                            .foregroundColor(defaultColor)
+                            .foregroundColor(color)
                             .padding(.leading, 13)
                     }.popover(isPresented: $isPop, arrowEdge: .bottom) {
                         switch type {
-                        case .button:
-                            ButtonPopView(text: $text, color: $color, isPop: $isPop)
-                        case .text:
-                            TextPopView(text: $text, color: $color, isPop: $isPop)
-                        case .image:
-                            ImagePopView(imageUrl: $text, color: $color, isPop: $isPop)
-                        default:
+                        case .button(action: let action, text: let text, color: let color):
+                            ButtonPopView(
+                                action: Binding(get: { action }, set: { type = .button(action: $0, text: text, color: color)}),
+                                text: Binding(get: { text }, set: { type = .button(action: action, text: $0, color: color)}),
+                                color: Binding(get: { color }, set: { type = .button(action: action, text: text, color: $0)}),
+                                isPop: $isPop
+                            )
+                        case .text(text: let text, size: let size, color: let color):
+                            TextPopView(text: Binding(get: { text }, set: {
+                                type = .text(text: $0, size: size, color: color)
+                            }), color: Binding(get: { color }, set: {
+                                type = .text(text: text, size: size, color: $0)
+                            }), size: Binding(get: { size }, set: {
+                                type = .text(text: text, size: $0, color: color)
+                            }), isPop: $isPop)
+                        case .image(url: let url):
+                            ImagePopView(imageUrl: Binding(get: { url }, set: {
+                                type = .image(url: $0)
+                            }), isPop: $isPop)
+                        case .spacer:
                             Spacer()
                         }
                     }
@@ -70,7 +114,7 @@ struct ComponentCell: View {
                 Button(action: deleteAction!) {
                     Image(systemName: "trash")
                         .frame(width: 19.27, height: 23.49)
-                        .foregroundColor(defaultColor)
+                        .foregroundColor(color)
                         .padding(.trailing, 13)
                 }
             }
@@ -80,11 +124,8 @@ struct ComponentCell: View {
     }
 }
 
-#Preview {
-    ComponentCell(type: .button())
-}
-
 struct ButtonPopView: View {
+    @Binding var action: ActionType
     @Binding var text: String
     @Binding var color: Color
     @Binding var isPop: Bool
@@ -92,7 +133,54 @@ struct ButtonPopView: View {
     var body: some View {
         VStack {
             PopUpHeaderView(isPop: $isPop, title: "동작 버튼")
-            ButtonTextFieldView(text: $text, placeholder: "버튼 제목..")
+            HStack {
+                TextField("버튼 제목...", text: $text)
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "x.circle.fill")
+                        .resizable()
+                        .frame(width: 17, height: 17)
+                        .foregroundColor(Color(uiColor: .systemGray2))
+                }
+                .padding(.trailing, 16)
+            }
+            .background(.black)
+            .cornerRadius(8)
+            switch action {
+            case .open(let url):
+                HStack {
+                    TextField("URL...", text: Binding(get: { url }, set: {
+                        action = .open(url: $0)
+                    }))
+                        .frame(height: 44)
+                        .padding(.leading, 16)
+                    Button {
+                        action = .open(url: "")
+                    } label: {
+                        Image(systemName: "x.circle.fill")
+                            .resizable()
+                            .frame(width: 17, height: 17)
+                            .foregroundColor(Color(uiColor: .systemGray2))
+                    }
+                    .padding(.trailing, 16)
+                }
+                .background(.black)
+                .cornerRadius(8)
+            case .variable(let key, let value):
+                HStack(spacing: 8) {
+                    TextField("키", text: Binding(get: { key }, set: {
+                        action = .variable(key: $0, value: value)
+                    }))
+                    .background(.black)
+                    .cornerRadius(8)
+                    TextField("값", text: Binding(get: { value }, set: {
+                        action = .variable(key: key, value: $0)
+                    }))
+                    .background(.black)
+                    .cornerRadius(8)
+                }
+            }
             ColorButtonView(color: $color, isColor: $isColor)
         }
         .padding(16)
@@ -102,14 +190,49 @@ struct ButtonPopView: View {
 }
 
 struct TextPopView: View {
-    @Binding var text: String
+    @Binding var text: TextType
     @Binding var color: Color
+    @Binding var size: CGFloat
     @Binding var isPop: Bool
     @State var isColor: Bool = false
     var body: some View {
         VStack {
             PopUpHeaderView(isPop: $isPop, title: "텍스트")
-            ButtonTextFieldView(text: $text, placeholder: "텍스트..")
+            HStack {
+                TextField("텍스트...", text: Binding(get: {
+                    switch text {
+                    case .constant(let value):
+                        return value
+                    case .variable(let key):
+                        return key
+                    }
+                }, set: {
+                    switch text {
+                    case .constant:
+                        text = .constant(value: $0)
+                    case .variable:
+                        text = .variable(key: $0)
+                    }
+                }))
+                    .frame(height: 44)
+                    .padding(.leading, 16)
+                Button {
+                    switch text {
+                    case .constant:
+                        text = .constant(value: "")
+                    case .variable:
+                        text = .variable(key: "")
+                    }
+                } label: {
+                    Image(systemName: "x.circle.fill")
+                        .resizable()
+                        .frame(width: 17, height: 17)
+                        .foregroundColor(Color(uiColor: .systemGray2))
+                }
+                .padding(.trailing, 16)
+            }
+            .background(.black)
+            .cornerRadius(8)
             ColorButtonView(color: $color, isColor: $isColor)
         }
         .padding(16)
@@ -120,14 +243,11 @@ struct TextPopView: View {
     
 struct ImagePopView: View {
     @Binding var imageUrl: String
-    @Binding var color: Color
     @Binding var isPop: Bool
     @State var isColor: Bool = false
     var body: some View {
         VStack {
             PopUpHeaderView(isPop: $isPop, title: "이미지")
-            ButtonTextFieldView(text: $imageUrl, placeholder: "이미지 url..")
-            ColorButtonView(color: $color, isColor: $isColor)
         }
         .padding(16)
         .frame(width: 270)
@@ -156,30 +276,6 @@ struct PopUpHeaderView: View {
             }
         }
         .padding(.horizontal, 4)
-    }
-}
-
-
-struct ButtonTextFieldView: View {
-    @Binding var text: String
-    let placeholder: String
-    var body: some View {
-        HStack {
-            TextField(placeholder, text: $text)
-                .frame(height: 44)
-                .padding(.leading, 16)
-            Button {
-                self.text = ""
-            } label: {
-                Image(systemName: "x.circle.fill")
-                    .resizable()
-                    .frame(width: 17, height: 17)
-                    .foregroundColor(Color(uiColor: .systemGray2))
-            }
-            .padding(.trailing, 16)
-        }
-        .background(.black)
-        .cornerRadius(8)
     }
 }
 
@@ -237,6 +333,19 @@ extension Color {
             return "파랑"
         default:
             return "없음"
+        }
+    }
+    
+    var toKeyword: String {
+        switch self {
+        case .red: return "red"
+        case .orange: return "orange"
+        case .yellow: return "yellow"
+        case .green: return "green"
+        case .blue: return "blue"
+        case .indigo: return "indigo"
+        case .purple: return "purple"
+        default: return "label"
         }
     }
 }

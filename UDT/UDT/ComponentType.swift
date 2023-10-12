@@ -21,36 +21,48 @@ enum TextType {
 }
 
 enum ComponentType {
+    
     case button(action: ActionType = .open(url: ""), text: String = "", color: Color = .blue)
-    case text(text: String = "", size: CGFloat = 20, color: Color = Color(.label))
+    case text(text: TextType = .constant(value: ""), size: CGFloat = 20, color: Color = Color(.label))
     case image(url: String = "")
     case spacer
     
     func isSpacer() -> Bool {
         switch self {
-        case .button(action: _, text: _, color: _):
-            false
-        case .text(text: _, size: _, color: _):
-            false
-        case .image(url: _):
+        case .button, .text, .image:
             false
         case .spacer:
             true
         }
     }
 
-    func bindComponent() -> (String, Image, Color) {
+    func toCode() -> String {
         switch self {
-        case .button:
-            return ("동작버튼", Image(systemName: "button.horizontal.top.press.fill"), .blue)
-        case .image:
-            return ("이미지", Image(systemName: "photo"), .pink)
+        case .button(action: let action, text: let text, color: let color):
+            var execute = ""
+            switch action {
+            case .variable(key: let key, value: let value):
+                execute = "var(\(key)=\"\(value)\")"
+            case .open(url: let url):
+                execute = "open(\"\(url)\")"
+            }
+            return "Button({\(execute)},\(text),\(color.toKeyword))"
+        case .text(text: let text, size: let size, color: let color):
+            var string = ""
+            switch text {
+            case .variable(key: let key):
+                string = "$\(key)"
+            case .constant(value: let value):
+                string = "\"\(value)\""
+            }
+            return "Text(\(string),\(size),\(color.toKeyword))"
+        case .image(url: let url):
+            return "Image(\"\(url)\")"
         case .spacer:
-            return ("간격", Image(systemName: "space"), .green)
-        case .text:
-            return ("텍스트", Image(systemName: "text.bubble.fill"), .indigo)
+            return "Spacer()"
         }
     }
+    
     static func formString(_ string: String) -> ComponentType {
         switch string {
         case "button":
