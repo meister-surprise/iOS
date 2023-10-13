@@ -30,7 +30,7 @@ struct MainView: View {
                     LazyVGrid(columns:[
                         GridItem(.adaptive(minimum: 309))
                     ], alignment: .center, spacing: 13) {
-                        ForEach(viewModel.projectList, id: \.id) { project in
+                        ForEach(viewModel.projectList.reversed(), id: \.id) { project in
                             NavigationLink {
                                 ProjectEditorView(id: project.id)
                                     .onDisappear(perform: {
@@ -55,6 +55,9 @@ struct MainView: View {
         .navigationViewStyle(.stack)
         .sheet(isPresented: $settingsPresented) {
             CreateView(isCreate: true)
+                .onDisappear {
+                    viewModel.getProjectDidTap()
+                }
         }
         .loadingScreen($viewModel.isLoading)
     }

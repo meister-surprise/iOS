@@ -35,9 +35,5 @@ class CreateViewModel: ObservableObject {
             }).disposed(by: disposeBag)
         
     }
-    
-    func deleteProjectDidTap() {
-        
-    }
 }
 

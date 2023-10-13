@@ -55,7 +55,8 @@ class ProjectEditorViewModel: ObservableObject {
                 } else {
                     string = .constant(value: String(operands[0]))
                 }
-                return ComponentType.text(text: string, size: CGFloat(Float(operands[1])!), color: operands[2].getColor())
+                guard let temp = Float(operands[1]) else { return nil }
+                return ComponentType.text(text: string, size: CGFloat(temp), color: operands[2].getColor())
             case .image:
                 return ComponentType.image(url: operands[0])
             case .spacer:
