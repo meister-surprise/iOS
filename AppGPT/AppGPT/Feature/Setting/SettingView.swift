@@ -77,6 +77,7 @@ struct SettingView: View {
                     Button("삭제", role: .destructive) {
                         viewModel.deleteProjectDidTap(id: id)
                         dismiss()
+                        viewModel.isDelete = true
                     }
                     Button("취소", role: .cancel) { alert.toggle() }
                 }

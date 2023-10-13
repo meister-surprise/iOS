@@ -35,6 +35,12 @@ struct ProjectEditorView: View {
         .navigationBarBackButtonHidden()
         .sheet(isPresented: $settingsPresented) {
             SettingView(viewModel: viewModel, id: id)
+                .onDisappear {
+                    if viewModel.isDelete {
+                        presentationMode.wrappedValue.dismiss()
+                        self.viewModel.isDelete = false
+                    }
+                }
         }
         .loadingScreen($viewModel.isLoading)
     }

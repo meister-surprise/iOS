@@ -12,7 +12,7 @@ enum API {
 
 extension API: TargetType {
     var baseURL: URL {
-        return URL(string: "https://9303-211-180-159-197.ngrok-free.app")!
+        return URL(string: "https://5066-211-180-159-197.ngrok-free.app")!
     }
     
     var path: String {

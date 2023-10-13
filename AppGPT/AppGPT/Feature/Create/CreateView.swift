@@ -62,23 +62,6 @@ struct CreateView: View {
                 }
                 .frame(height: 32)
                 Spacer()
-                if !isCreate {
-                    Button {
-                        alert.toggle()
-                    } label: {
-                        Text("프로젝트 삭제")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .padding(.vertical, 11)
-                            .frame(width: 302)
-                            .background(Color.red)
-                            .clipShape(Capsule())
-                    }
-                    .alert("정말 삭제하시겠습니까?", isPresented: $alert) {
-                        Button("삭제", role: .destructive) { viewModel.deleteProjectDidTap() }
-                        Button("취소", role: .cancel) { alert.toggle() }
-                    }
-                }
                 Button {
                     viewModel.createProjectDidTap()
                     dismiss()

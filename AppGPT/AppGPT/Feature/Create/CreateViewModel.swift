@@ -7,8 +7,8 @@ class CreateViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var selection: Int = 0
     @Published var color: Color = .blue
+    let api = Service()
     func createProjectDidTap() {
-        let api = Service()
         api.postProject("김희망", title, color.toKeyword, "", selection == 0 ? "PUBLIC" : "PRIVATE")
             .asObservable()
             .subscribe(onNext: { res in
@@ -22,7 +22,6 @@ class CreateViewModel: ObservableObject {
     }
     
     func changeProjectDidTap(id: Int, code: String) {
-        let api = Service()
         api.patchProjectDetail(id, "김희망", title, color.toKeyword, code, selection == 0 ? "PUBLIC" : "PRIVATE")
             .asObservable()
             .subscribe(onNext: { res in
